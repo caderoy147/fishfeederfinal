@@ -38,22 +38,20 @@ $(document).ready(function () {
 
 // ...
 
+// ...
 // Real-time listener for scheduler settings
-  database.ref("schedulerSettings").on("value", function (snapshot) {
+database.ref("schedulerSettings").on("value", function (snapshot) {
   const schedulerSettings = snapshot.val();
 
   // Check if schedulerSettings is not null before displaying
   if (schedulerSettings !== null) {
     displaySchedulerSettings(schedulerSettings);
+    displayRunningTime(schedulerSettings); // Add this line to display running time
   } else {
     // Handle the case when schedulerSettings is null
     displaySchedulerSettings(null);
   }
 });
-
-
-
-
 
 // Function to update UI based on scheduler settings
 function displaySchedulerSettings(settings) {
@@ -69,6 +67,67 @@ function displaySchedulerSettings(settings) {
     displayElement.textContent = "No scheduler settings available.";
   }
 }
+
+
+
+
+
+// Real-time listener for currentTime
+setInterval(function () {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  const currentAmPm = currentHour >= 12 ? "pm" : "am";
+  const formattedCurrentTime = {
+    hour: currentHour % 12 || 12,
+    minute: currentMinute.toString().padStart(2, '0'),
+    ampm: currentAmPm,
+    day: now.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase()
+  };
+
+  displayCurrentTime(formattedCurrentTime);
+}, 1000);
+
+// Function to update UI based on current time
+function displayCurrentTime(currentTime) {
+  const displayRunningTimeElement = document.getElementById("displayRunningTime");
+
+  if (currentTime) {
+    const { hour, minute, ampm, day } = currentTime;
+
+    const formattedTime = `Current Time: Hour: ${hour}, Minute: ${minute}, AM/PM: ${ampm}, Day: ${day}`;
+
+    displayRunningTimeElement.textContent = formattedTime;
+  } else {
+    displayRunningTimeElement.textContent = "No current time available.";
+  }
+}
+
+// Inside the setInterval function
+setInterval(function () {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  const currentAmPm = currentHour >= 12 ? "pm" : "am";
+  const formattedCurrentTime = {
+    hour: currentHour % 12 || 12,
+    minute: currentMinute.toString().padStart(2, '0'),
+    ampm: currentAmPm,
+    day: now.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase()
+  };
+
+  displayCurrentTime(formattedCurrentTime);
+
+  // Send the current time to the real-time database
+  const currentTimeRef = database.ref("currentTime");
+  currentTimeRef.set(formattedCurrentTime);
+}, 1000);
+
+
+
+
+
+
 
 
 
