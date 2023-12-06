@@ -141,7 +141,7 @@ document.getElementById("saveButton").addEventListener("click", function () {
 
 // Function to save scheduler settings to Firebase
 function saveSchedulerSettings() {
-  const selectedHour = document.getElementById("hour-dd").value;
+  const selectedHour = parseInt(document.getElementById("hour-dd").value, 10); // Convert to integer
   const selectedMinute = document.getElementById("minute-dd").value;
   const selectedAmPm = document.getElementById("ampm-dd").value;
   const daysButtons = document.querySelectorAll('.day-button');
@@ -236,6 +236,16 @@ dayButtons.forEach(button => {
       firebaseRef.set("1");
     }
   }
+
+
+
+
+
+
+
+
+
+
 
 
 
