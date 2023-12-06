@@ -196,7 +196,7 @@ dayButtons.forEach(button => {
 
   // Event listener for the "MANUAL DISPENSE" button
   $("#saveButton").click(function () {
-    manualDispense();
+   // manualDispense();
   });  
 
 
