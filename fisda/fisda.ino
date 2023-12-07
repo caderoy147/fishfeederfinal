@@ -45,12 +45,13 @@
 
 
 ///
-const char* ntpServer1="ph.pool.ntp.org";
-const char* ntpServer2="time.nist.gov";
+const char* ntpServer1="pool.ntp.org";
+const char* ntpServer2="ph.pool.ntp.org";
 const long gmtOffset_sec=28800;
 const int daylightOffset_sec=28800;
 
 const char* time_zone = "CET-1CSET,M3.5.0,M10.5.0/3";
+
 
 
 //Define Firebase Data object
@@ -67,6 +68,13 @@ bool signupOK = false;
 const int stepsPerRevolution = 2048;
 Stepper myStepper(stepsPerRevolution,32, 25, 33, 26);  
 WiFiServer server(80);
+
+
+
+
+///////
+int dayTest;
+
 
 
 void setup(){
@@ -124,50 +132,64 @@ void setup(){
   pinMode(LedPin, OUTPUT);
   pinMode(Led1Pin, OUTPUT);
   myStepper.setSpeed(15);
+
+
+
+
+  sntp_servermode_dhcp(1);
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer1, ntpServer2);
+  configTzTime(time_zone, ntpServer1, ntpServer2);
+  
+
 }
 
 void loop(){
 
   int amountToFeedSpin;
 
-  if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0)){
-    sendDataPrevMillis = millis();
-    // Write an Int number on the database path test/int
-    if (Firebase.RTDB.setInt(&fbdo, "test/int", count)){
-      Serial.println("PASSED");
-      Serial.println("PATH: " + fbdo.dataPath());
-      Serial.println("TYPE: " + fbdo.dataType());
-    }
-    else {
-      Serial.println("FAILED");
-      Serial.println("REASON: " + fbdo.errorReason());
-    }
-    count++;
+  // if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0)){
+  //   sendDataPrevMillis = millis();
+  //   // Write an Int number on the database path test/int
+  //   if (Firebase.RTDB.setInt(&fbdo, "test/int", count)){
+  //     Serial.println("PASSED");
+  //     Serial.println("PATH: " + fbdo.dataPath());
+  //     Serial.println("TYPE: " + fbdo.dataType());
+  //   }
+  //   else {
+  //     Serial.println("FAILED");
+  //     Serial.println("REASON: " + fbdo.errorReason());
+  //   }
+  //   count++;
     
-    // Write an Float number on the database path test/float
-    if (Firebase.RTDB.setFloat(&fbdo, "test/float", 0.01 + random(0,100))){
-      Serial.println("PASSED");
-      Serial.println("PATH: " + fbdo.dataPath());
-      Serial.println("TYPE: " + fbdo.dataType());
-    }
-    else {
-      Serial.println("FAILED");
-      Serial.println("REASON: " + fbdo.errorReason());
-    }
+  //   // Write an Float number on the database path test/float
+  //   if (Firebase.RTDB.setFloat(&fbdo, "test/float", 0.01 + random(0,100))){
+  //     Serial.println("PASSED");
+  //     Serial.println("PATH: " + fbdo.dataPath());
+  //     Serial.println("TYPE: " + fbdo.dataType());
+  //   }
+  //   else {
+  //     Serial.println("FAILED");
+  //     Serial.println("REASON: " + fbdo.errorReason());
+  //   }
 
 
 
-    updateLedStatus();
+    // updateLedStatus();
 
-    updateManualStatus();
+    // updateManualStatus();
 
-    amountToFeedSpin = scheduler();
+    // amountToFeedSpin = scheduler();
 
-    spin(amountToFeedSpin);
+    // spin(amountToFeedSpin);
 
     Serial.println("LOCAL TIME::");
+
     printLocalTime();
-  }
+    
+
+
+    Serial.println("sample: "+dayTest);
+ //}
 }
 
 void spin(int amount){
@@ -177,7 +199,7 @@ void spin(int amount){
     // Implement your logic for moving the stepper motor based on the schedule
   // You can use the SchedulerSettings structure to get the schedule details
   
-  if(amount==0){
+  if(amount!=0){
   myStepper.step(stepsPerRevolution*amountSpins); // move one step clockwise
   delay(60000);}else{
   moveClockwiseStop();}
@@ -334,6 +356,8 @@ String dayUser7;
     minuteCurrent = doc["minute"].as<String>();
     ampmCurrent = doc["ampm"].as<String>();
 
+    
+
 
   } else {
     Serial.println("Failed to get JSON data");
@@ -377,9 +401,6 @@ String dayUser7;
  
   /////////////////////////////////////////checker /in this par we match values
 
-
-
-  
 
 }
 
@@ -438,12 +459,24 @@ void updateLedStatus()
 
 
 void printLocalTime(){
+  delay(1000);
   struct tm timeinfo;
   if(!getLocalTime(&timeinfo)){
     Serial.println("No time available (yet)");
     return;
   }
   Serial.println(&timeinfo,"%A, %B %d %Y %H:%M:%S");
+
+
+
+
+  dayTest = timeinfo.tm_mday;
+  
+
 }
+
+
+
+
 
 
