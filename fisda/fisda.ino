@@ -45,10 +45,10 @@
 
 
 ///
-const char* ntpServer1="pool.ntp.org";
-const char* ntpServer2="ph.pool.ntp.org";
-const long gmtOffset_sec=28800;
-const int daylightOffset_sec=28800;
+const char* ntpServer1="asia.pool.ntp.org";
+const char* ntpServer2="asia.pool.ntp.org";
+const long gmtOffset_sec=0;
+const int daylightOffset_sec=0;
 
 const char* time_zone = "CET-1CSET,M3.5.0,M10.5.0/3";
 
@@ -72,8 +72,15 @@ WiFiServer server(80);
 
 
 
-///////
+///////current time timer.h
 int dayTest;
+int hourTest;
+int minuteTest;
+String ampmCurentNow;
+String ampmCurentNowPH;
+
+int hourPh;
+int hourPhFinal;
 
 
 
@@ -181,14 +188,25 @@ void loop(){
     // amountToFeedSpin = scheduler();
 
     // spin(amountToFeedSpin);
-
+    timeZoneMainplation();
     Serial.println("LOCAL TIME::");
+
+    Serial.print("sample1: ");
+    Serial.println(dayTest);
+    Serial.print("Hour from timer.h : ");
+    Serial.println(hourTest);
+
+    Serial.println(minuteTest);
+    Serial.println(ampmCurentNow);
+    Serial.println("hourzone: "+ampmCurentNow);
+
+    Serial.print("sample2: ");
+    Serial.println(hourPh);
 
     printLocalTime();
     
 
 
-    Serial.println("sample: "+dayTest);
  //}
 }
 
@@ -470,11 +488,67 @@ void printLocalTime(){
 
 
 
-  dayTest = timeinfo.tm_mday;
-  
+  dayTest = timeinfo.tm_wday;
+  hourTest = timeinfo.tm_hour;
+  minuteTest = timeinfo.tm_min;
 
+  ampmCurentNow;
+  
+  if (timeinfo.tm_hour < 12) {
+      ampmCurentNow = "AM";
+  } else {
+      ampmCurentNow = "PM";
+  }
+
+ 
 }
 
+void timeZoneMainplation(){
+  hourPh = hourTest;
+
+  hourPh=hourPh+7;
+
+  hourPhFinal=hourPh;
+
+  if(hourPh>12){
+    ampmCurentNowPH="PM";
+  }else{
+    ampmCurentNowPH ="AM";
+  }
+
+  if(hourPh==13){
+    hourPhFinal=1;
+  }else if(hourPh==14){
+    hourPhFinal=2;
+  }else if(hourPh==15){
+    hourPhFinal=3;
+  }else if(hourPh==16){
+    hourPhFinal=4;
+  }else if(hourPh==17){
+    hourPhFinal=5;
+  }else if(hourPh==18){
+    hourPhFinal=6;
+  }else if(hourPh==19){
+    hourPhFinal=7;
+  }else if(hourPh==20){
+    hourPhFinal=8;
+  }else if(hourPh==21){
+    hourPhFinal=9;
+  }else if(hourPh==22){
+    hourPhFinal=10;
+  }else if(hourPh==23){
+    hourPhFinal=11;
+  }else if(hourPh==24){
+    hourPhFinal=12;
+  }
+
+
+  Serial.println("from function");
+  Serial.println(hourPh);
+
+  Serial.println("from function1");
+  Serial.println(hourPhFinal+7);
+}
 
 
 

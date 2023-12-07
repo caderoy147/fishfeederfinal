@@ -101,6 +101,8 @@ function displayCurrentTime(currentTime) {
   } else {
     displayRunningTimeElement.textContent = "No current time available.";
   }
+
+
 }
 
 // Inside the setInterval function
@@ -141,9 +143,21 @@ document.getElementById("saveButton").addEventListener("click", function () {
 
 // Function to save scheduler settings to Firebase
 function saveSchedulerSettings() {
-  const selectedHour = parseInt(document.getElementById("hour-dd").value, 10); // Convert to integer
-  const selectedMinute = document.getElementById("minute-dd").value;
+  let selectedHour = parseInt(document.getElementById("hour-dd").value, 10); // Convert to integer
   const selectedAmPm = document.getElementById("ampm-dd").value;
+
+
+  // Adjust selectedHour based on AM or PM
+  if (selectedAmPm === "pm" || selectedAmPm === "PM") {
+    selectedHour += 12;
+  } else if (selectedAmPm === "am" || selectedAmPm === "AM") {
+    // Here, if it's AM, you should not modify selectedHour
+  }
+  console.log("After adjustment - selectedHour:", selectedHour);
+
+  const selectedMinute = parseInt(document.getElementById("minute-dd").value, 10); // Convert to integer
+
+ 
   const daysButtons = document.querySelectorAll('.day-button');
   const selectedDays = [];
 
@@ -162,7 +176,7 @@ function saveSchedulerSettings() {
     days: selectedDays,
     amountToFeed: amountToFeed
   };
-
+  console.log("Final schedulerSettings:", schedulerSettings);
   // Save scheduler settings to Firebase
   database.ref("schedulerSettings").set(schedulerSettings);
 }
