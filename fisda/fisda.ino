@@ -1,3 +1,7 @@
+#include <ArduinoJson.h>
+#include "time.h"
+#include "sntp.h"
+
 /*
   Rui Santos
   Complete project details at our blog.
@@ -40,14 +44,20 @@
 #define Led1Pin 12                            // GPIO pin where the built-in LED is connected on ESP32
 
 
+///
+const char* ntpServer1="ph.pool.ntp.org";
+const char* ntpServer2="time.nist.gov";
+const long gmtOffset_sec=28800;
+const int daylightOffset_sec=28800;
 
-
+const char* time_zone = "CET-1CSET,M3.5.0,M10.5.0/3";
 
 
 //Define Firebase Data object
 FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
+
 
 unsigned long sendDataPrevMillis = 0;
 int count = 0;
@@ -66,7 +76,7 @@ void setup(){
   WiFiManager wifiManager;
 
   // Uncomment the line below if you want to reset the saved credentials
-   wifiManager.resetSettings();
+ //  wifiManager.resetSettings();
 
   // Set config portal timeout to 5 minutes
   wifiManager.setConfigPortalTimeout(300);
@@ -117,6 +127,9 @@ void setup(){
 }
 
 void loop(){
+
+  int amountToFeedSpin;
+
   if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0)){
     sendDataPrevMillis = millis();
     // Write an Int number on the database path test/int
@@ -144,42 +157,293 @@ void loop(){
 
 
 
+    updateLedStatus();
 
-    if (Firebase.RTDB.getString(&fbdo, "/Led1Status")) {
-      String ledstatus = fbdo.stringData();
-      if (ledstatus.toInt() == 1) {
-        digitalWrite(LedPin, HIGH);
-        digitalWrite(Led1Pin, HIGH);
-        Serial.println("LED on");
-      } else {
-        digitalWrite(LedPin, LOW);
-        digitalWrite(Led1Pin, LOW);
-        Serial.println("LED off");
-      }
-    }
+    updateManualStatus();
+
+    amountToFeedSpin = scheduler();
+
+    spin(amountToFeedSpin);
+
+    Serial.println("LOCAL TIME::");
+    printLocalTime();
+  }
+}
+
+void spin(int amount){
+
+  int amountSpins = amount;
+  
+    // Implement your logic for moving the stepper motor based on the schedule
+  // You can use the SchedulerSettings structure to get the schedule details
+  
+  if(amount==0){
+  myStepper.step(stepsPerRevolution*amountSpins); // move one step clockwise
+  delay(60000);}else{
+  moveClockwiseStop();}
+
+}
 
 
+void checkScheduler1() {
+  if (Firebase.RTDB.getJSON(&fbdo, "/schedulerSettings")) {
+    String jsonString = fbdo.jsonString();
 
-    if (Firebase.RTDB.getString(&fbdo, "/ManualStatus")) {
-      String manualstatus = fbdo.stringData();
-      if (manualstatus.toInt() == 1) {
-        moveClockwise();
-        Serial.println("steppper on");
-      } else {
-        moveClockwiseStop();
-        Serial.println("stepper off");
-      }
-    }
+    // Now jsonString contains the JSON data as a String
+    Serial.println("JSON Data: " + jsonString);
 
-    
+    // Now you can parse jsonString using ArduinoJson library
+    // Example: Parse JSON data with ArduinoJson
+    DynamicJsonDocument doc(1024);
+    deserializeJson(doc, jsonString);
+
+    // Extract the value of 'amountToFeed' field
+    String amountToFeedValue = doc["amountToFeed"].as<String>();
+
+    Serial.println("Amount to feed: " + amountToFeedValue);
+  } else {
+    Serial.println("Failed to get JSON data");
   }
 }
 
 
 
-void moveClockwise() { // set initial speed
-  myStepper.step(stepsPerRevolution); // move 5 revolutions clockwise
+
+
+void checkCurrentTime() {
+  if (Firebase.RTDB.getJSON(&fbdo, "/currentTime")) {
+    String jsonString = fbdo.jsonString();
+
+    // Now jsonString contains the JSON data as a String
+    Serial.println("JSON Data: " + jsonString);
+
+    // Now you can parse jsonString using ArduinoJson library
+    // Example: Parse JSON data with ArduinoJson
+    DynamicJsonDocument doc(1024);
+    deserializeJson(doc, jsonString);
+
+    // Extract the value of 'amountToFeed' field
+    String currentDayToday = doc["day"].as<String>();
+
+    Serial.println("today is: " + currentDayToday);
+  } else {
+    Serial.println("Failed to get JSON data");
+  }
 }
+
+
+
+
+
+
+
+
+int scheduler()
+{
+
+  //////////////////global declarations for mathching
+
+  //////data types of user
+  int amountToFeedValue;
+  String ampmUser;
+  String dayUser;
+  JsonArray dayArray;
+  String hourUser;
+  String minuteUser;
+
+
+  //////data types for current time
+  String ampmCurrent;
+  String dayCurrent;
+  String hourCurrent;
+  String minuteCurrent;
+
+
+
+/////
+
+String dayUser1;
+String dayUser2;
+String dayUser3;
+String dayUser4;
+String dayUser5;
+String dayUser6;
+String dayUser7;
+
+  //////////////////////////////////////scheduler users chosen sched
+
+  if (Firebase.RTDB.getJSON(&fbdo, "/schedulerSettings")) {
+    String jsonString = fbdo.jsonString();
+
+    // Now jsonString contains the JSON data as a String
+    Serial.println("JSON Data: " + jsonString);
+
+    // Now you can parse jsonString using ArduinoJson library
+    // Example: Parse JSON data with ArduinoJson
+    DynamicJsonDocument doc(1024);
+    deserializeJson(doc, jsonString);
+
+    // Extract the value of 'amountToFeed' field
+    amountToFeedValue = doc["amountToFeed"].as<int>();
+    dayArray = doc["days"].as<JsonArray>();
+
+    // Now you can iterate over the elements in the array
+    for (int i = 0; i < dayArray.size(); i++) {
+        String day = dayArray[i].as<String>();
+        // Do something with each day
+        Serial.println(day);
+    }
+
+     dayUser1 = dayArray[0].as<String>();
+     dayUser2 = dayArray[1].as<String>();
+     dayUser3 = dayArray[2].as<String>();
+     dayUser4 = dayArray[3].as<String>();
+     dayUser5 = dayArray[4].as<String>();
+     dayUser6 = dayArray[5].as<String>();
+     dayUser7 = dayArray[6].as<String>();
+
+
+    hourUser = doc["hour"].as<String>();
+    minuteUser = doc["minute"].as<String>();
+    ampmUser = doc["ampm"].as<String>();
+
+
+  } else {
+    Serial.println("Failed to get JSON data");
+  }
+
+
+  ////////////////////////////////////////////// whats the current time day
+
+
+
+  if (Firebase.RTDB.getJSON(&fbdo, "/currentTime")) {
+    String jsonString = fbdo.jsonString();
+
+    // Now jsonString contains the JSON data as a String
+    Serial.println("JSON Data: " + jsonString);
+
+    // Now you can parse jsonString using ArduinoJson library
+    // Example: Parse JSON data with ArduinoJson
+    DynamicJsonDocument doc(1024);
+    deserializeJson(doc, jsonString);
+
+    // Extract the value of 'amountToFeed' field
+    dayCurrent = doc["day"].as<String>();
+    hourCurrent = doc["hour"].as<String>();
+    minuteCurrent = doc["minute"].as<String>();
+    ampmCurrent = doc["ampm"].as<String>();
+
+
+  } else {
+    Serial.println("Failed to get JSON data");
+  }
+
+
+  // Assuming dayCurrent, hourUser, minuteUser, ampmUser, amountToFeedValue are already defined
+
+
+
+
+
+    Serial.println("Amount to feed: " + String(amountToFeedValue));
+    Serial.println("SHED IS DAY: " + dayUser1);
+    Serial.println("SHED IS DAY: " + dayUser2);
+    Serial.println("SHED IS DAY: " + dayUser3);
+    Serial.println("SHED IS DAY: " + dayUser4);
+    Serial.println("SHED IS DAY: " + dayUser5);
+    Serial.println("SHED IS DAY: " + dayUser6);
+    Serial.println("SHED IS DAY: " + dayUser7);
+    Serial.println("SHED IS hour is: " + hourUser);
+    Serial.println("SHED IS minute is: " + minuteUser);
+    Serial.println("SHED IS am/pm is: " + ampmUser);
+
+    Serial.println("today is: " + dayCurrent);
+    Serial.println("current hour is: " + hourCurrent);
+    Serial.println("current minute is: " + minuteCurrent);
+    Serial.println("current am/pm is: " + ampmCurrent);
+	
+
+      // Check if dayCurrent matches any day in the array
+      if ((dayCurrent == dayUser1 || dayCurrent == dayUser2 || dayCurrent == dayUser3 || dayCurrent == dayUser4 || dayCurrent == dayUser5 || dayCurrent == dayUser6 || dayCurrent == dayUser7) && hourCurrent == hourUser && minuteCurrent == minuteUser && ampmCurrent == ampmUser) {
+          // Schedules match, return amountToFeedValue (dayCurrent == dayUser1 || dayCurrent == dayUser2 || dayCurrent == dayUser3 || dayCurrent == dayUser4 || dayCurrent == dayUser5 || dayCurrent == dayUser6 || dayCurrent == dayUser7) &&
+          Serial.println("ITS FEEDING TIME!!!");
+          return amountToFeedValue;
+      } else {
+          // Schedules do not match, return 0
+          Serial.println("Not Yet feeding time");
+          return 0;
+      }
+ 
+  /////////////////////////////////////////checker /in this par we match values
+
+
+
+  
+
+}
+
+
+
+
+
+
+
+
+
+void updateManualStatus() {
+  while (Firebase.RTDB.getString(&fbdo, "/ManualStatus")) {
+    String manualstatus = fbdo.stringData();
+    if (manualstatus.toInt() == 1) {
+      myStepper.step(stepsPerRevolution); // move one step clockwise
+    } else {
+      moveClockwiseStop();
+      Serial.println("stepper off");
+      break;
+    }
+  }
+}
+
 void moveClockwiseStop(){
   myStepper.step(0);
+  digitalWrite(32,LOW);
+  digitalWrite(25,LOW);
+  digitalWrite(33,LOW);
+  digitalWrite(26,LOW);
+  
 }
+
+
+
+void updateLedStatus()
+{
+  if (Firebase.RTDB.getString(&fbdo, "/Led1Status"))
+  {
+    String ledstatus = fbdo.stringData();
+    if (ledstatus.toInt() == 1)
+    {
+      digitalWrite(LedPin, HIGH);
+      digitalWrite(Led1Pin, HIGH);
+      Serial.println("LED on");
+    }
+    else
+    {
+      digitalWrite(LedPin, LOW);
+      digitalWrite(Led1Pin, LOW);
+      Serial.println("LED off");
+    }
+  }
+}
+
+
+
+void printLocalTime(){
+  struct tm timeinfo;
+  if(!getLocalTime(&timeinfo)){
+    Serial.println("No time available (yet)");
+    return;
+  }
+  Serial.println(&timeinfo,"%A, %B %d %Y %H:%M:%S");
+}
+
+
