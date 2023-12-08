@@ -47,10 +47,10 @@
 ///
 const char* ntpServer1="asia.pool.ntp.org";
 const char* ntpServer2="asia.pool.ntp.org";
-const long gmtOffset_sec=0;
-const int daylightOffset_sec=0;
+const long gmtOffset_sec=28800;
+const int daylightOffset_sec=28800;
 
-const char* time_zone = "CET-1CSET,M3.5.0,M10.5.0/3";
+const char* time_zone = "Asia/Manila";
 
 
 
@@ -77,7 +77,7 @@ int dayTest;
 int hourTest;
 int minuteTest;
 String ampmCurentNow;
-String ampmCurentNowPH;
+
 
 int hourPh;
 int hourPhFinal;
@@ -154,30 +154,30 @@ void loop(){
 
   int amountToFeedSpin;
 
-  // if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0)){
-  //   sendDataPrevMillis = millis();
-  //   // Write an Int number on the database path test/int
-  //   if (Firebase.RTDB.setInt(&fbdo, "test/int", count)){
-  //     Serial.println("PASSED");
-  //     Serial.println("PATH: " + fbdo.dataPath());
-  //     Serial.println("TYPE: " + fbdo.dataType());
-  //   }
-  //   else {
-  //     Serial.println("FAILED");
-  //     Serial.println("REASON: " + fbdo.errorReason());
-  //   }
-  //   count++;
+   if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0)){
+      sendDataPrevMillis = millis();
+     // Write an Int number on the database path test/int
+     if (Firebase.RTDB.setInt(&fbdo, "test/int", count)){
+       Serial.println("PASSED");
+       Serial.println("PATH: " + fbdo.dataPath());
+       Serial.println("TYPE: " + fbdo.dataType());
+     }
+     else {
+       Serial.println("FAILED");
+       Serial.println("REASON: " + fbdo.errorReason());
+     }
+     count++;
     
-  //   // Write an Float number on the database path test/float
-  //   if (Firebase.RTDB.setFloat(&fbdo, "test/float", 0.01 + random(0,100))){
-  //     Serial.println("PASSED");
-  //     Serial.println("PATH: " + fbdo.dataPath());
-  //     Serial.println("TYPE: " + fbdo.dataType());
-  //   }
-  //   else {
-  //     Serial.println("FAILED");
-  //     Serial.println("REASON: " + fbdo.errorReason());
-  //   }
+     // Write an Float number on the database path test/float
+     if (Firebase.RTDB.setFloat(&fbdo, "test/float", 0.01 + random(0,100))){
+       Serial.println("PASSED");
+       Serial.println("PATH: " + fbdo.dataPath());
+       Serial.println("TYPE: " + fbdo.dataType());
+     }
+     else {
+     Serial.println("FAILED");
+       Serial.println("REASON: " + fbdo.errorReason());
+    }
 
 
 
@@ -185,10 +185,10 @@ void loop(){
 
     // updateManualStatus();
 
-    // amountToFeedSpin = scheduler();
+     amountToFeedSpin = scheduler();
 
-    // spin(amountToFeedSpin);
-    timeZoneMainplation();
+     spin(amountToFeedSpin);
+
     Serial.println("LOCAL TIME::");
 
     Serial.print("sample1: ");
@@ -197,17 +197,14 @@ void loop(){
     Serial.println(hourTest);
 
     Serial.println(minuteTest);
-    Serial.println(ampmCurentNow);
     Serial.println("hourzone: "+ampmCurentNow);
 
-    Serial.print("sample2: ");
-    Serial.println(hourPh);
 
     printLocalTime();
     
 
 
- //}
+ }
 }
 
 void spin(int amount){
@@ -288,8 +285,8 @@ int scheduler()
   String ampmUser;
   String dayUser;
   JsonArray dayArray;
-  String hourUser;
-  String minuteUser;
+  int hourUser;
+  int minuteUser;
 
 
   //////data types for current time
@@ -302,15 +299,38 @@ int scheduler()
 
 /////
 
-String dayUser1;
-String dayUser2;
-String dayUser3;
-String dayUser4;
-String dayUser5;
-String dayUser6;
-String dayUser7;
+    String dayUser1;
+    String dayUser2;
+    String dayUser3;
+    String dayUser4;
+    String dayUser5;
+    String dayUser6;
+    String dayUser7;
 
   //////////////////////////////////////scheduler users chosen sched
+
+
+    String dayCurrentTime;
+
+
+    //day checker
+    if(dayTest==1){
+      dayCurrentTime = "MON";
+    }else if(dayTest==2){
+      dayCurrentTime = "TUE";
+    }else if(dayTest==3){
+      dayCurrentTime = "WED";
+    }else if(dayTest==4){
+      dayCurrentTime = "THU";
+    }else if(dayTest==5){
+      dayCurrentTime = "FRI";
+    }else if(dayTest==6){
+      dayCurrentTime = "SAT";
+    }else if(dayTest==7){
+      dayCurrentTime = "SUN";
+    }
+
+
 
   if (Firebase.RTDB.getJSON(&fbdo, "/schedulerSettings")) {
     String jsonString = fbdo.jsonString();
@@ -343,8 +363,8 @@ String dayUser7;
      dayUser7 = dayArray[6].as<String>();
 
 
-    hourUser = doc["hour"].as<String>();
-    minuteUser = doc["minute"].as<String>();
+    hourUser = doc["hour"].as<int>();
+    minuteUser = doc["minute"].as<int>();
     ampmUser = doc["ampm"].as<String>();
 
 
@@ -396,20 +416,24 @@ String dayUser7;
     Serial.println("SHED IS DAY: " + dayUser5);
     Serial.println("SHED IS DAY: " + dayUser6);
     Serial.println("SHED IS DAY: " + dayUser7);
-    Serial.println("SHED IS hour is: " + hourUser);
-    Serial.println("SHED IS minute is: " + minuteUser);
+    Serial.print("SHED IS hour is: ");
+    Serial.println(hourUser);
+    Serial.print("SHED IS minute is: ");
+    Serial.println(minuteUser);
     Serial.println("SHED IS am/pm is: " + ampmUser);
-
-    Serial.println("today is: " + dayCurrent);
+    Serial.println("today is: " + dayCurrentTime);
+    
     Serial.println("current hour is: " + hourCurrent);
     Serial.println("current minute is: " + minuteCurrent);
     Serial.println("current am/pm is: " + ampmCurrent);
 	
 
       // Check if dayCurrent matches any day in the array
-      if ((dayCurrent == dayUser1 || dayCurrent == dayUser2 || dayCurrent == dayUser3 || dayCurrent == dayUser4 || dayCurrent == dayUser5 || dayCurrent == dayUser6 || dayCurrent == dayUser7) && hourCurrent == hourUser && minuteCurrent == minuteUser && ampmCurrent == ampmUser) {
+      if ((dayCurrentTime == dayUser1 || dayCurrentTime == dayUser2 || dayCurrentTime == dayUser3 || dayCurrentTime == dayUser4 || dayCurrentTime == dayUser5 || dayCurrentTime == dayUser6 || dayCurrentTime == dayUser7) && hourTest == hourUser && minuteTest == minuteUser && ampmCurentNow == ampmUser) {
           // Schedules match, return amountToFeedValue (dayCurrent == dayUser1 || dayCurrent == dayUser2 || dayCurrent == dayUser3 || dayCurrent == dayUser4 || dayCurrent == dayUser5 || dayCurrent == dayUser6 || dayCurrent == dayUser7) &&
           Serial.println("ITS FEEDING TIME!!!");
+
+
           return amountToFeedValue;
       } else {
           // Schedules do not match, return 0
@@ -493,62 +517,16 @@ void printLocalTime(){
   minuteTest = timeinfo.tm_min;
 
   ampmCurentNow;
-  
-  if (timeinfo.tm_hour < 12) {
-      ampmCurentNow = "AM";
-  } else {
-      ampmCurentNow = "PM";
-  }
+      if (timeinfo.tm_hour < 12) {
+        ampmCurentNow = "am";
+    } else {
+        ampmCurentNow = "pm";
+    }
 
+  
  
 }
 
-void timeZoneMainplation(){
-  hourPh = hourTest;
-
-  hourPh=hourPh+7;
-
-  hourPhFinal=hourPh;
-
-  if(hourPh>12){
-    ampmCurentNowPH="PM";
-  }else{
-    ampmCurentNowPH ="AM";
-  }
-
-  if(hourPh==13){
-    hourPhFinal=1;
-  }else if(hourPh==14){
-    hourPhFinal=2;
-  }else if(hourPh==15){
-    hourPhFinal=3;
-  }else if(hourPh==16){
-    hourPhFinal=4;
-  }else if(hourPh==17){
-    hourPhFinal=5;
-  }else if(hourPh==18){
-    hourPhFinal=6;
-  }else if(hourPh==19){
-    hourPhFinal=7;
-  }else if(hourPh==20){
-    hourPhFinal=8;
-  }else if(hourPh==21){
-    hourPhFinal=9;
-  }else if(hourPh==22){
-    hourPhFinal=10;
-  }else if(hourPh==23){
-    hourPhFinal=11;
-  }else if(hourPh==24){
-    hourPhFinal=12;
-  }
-
-
-  Serial.println("from function");
-  Serial.println(hourPh);
-
-  Serial.println("from function1");
-  Serial.println(hourPhFinal+7);
-}
 
 
 
