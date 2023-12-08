@@ -22,18 +22,43 @@
     <h1>DASHBOARD</h1>
   </header>
   <div>
-    <div>
+    <div class="navButtons">
       <button onclick="showView('dashboardView')">Dashboard</button>
       <button onclick="showView('connectionView')">Wifi Settings</button>
       <button onclick="showView('schedulerView')">Set Schedule</button>
       <button onclick="showView('manualView')">User Manual</button>
     </div>
+
     <div id="dashboardView" class="visible">
-      <div>
+      
+      <div id="dashboardContent">
+        <button id="manualDispenseBtn">MANUAL DISPENSE</button>
+        <div id="dashboardContent2">
         <h3>Feeding History</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Amount Feed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2023-01-01 08:00 AM</td>
+              <td>50 grams</td>
+            </tr>
+            <tr>
+              <td>2023-01-02 12:30 PM</td>
+              <td>30 grams</td>
+            </tr>
+            <!-- Add more dummy data rows as needed -->
+          </tbody>
+        </table>
+        </div>
       </div>
-      <button id="manualDispenseBtn">MANUAL DISPENSE</button>
     </div>
+
+
     <div id="connectionView" class="hidden">
         <!-- ... Connection form content ... -->
         
@@ -138,17 +163,22 @@
 
         
         <!-- Add this inside the #schedulerView -->
-      <div id="currentSchedulerSettings">
-        <h3>Current Scheduler Settings:</h3>
-        <p id="displaySchedulerSettings"></p>
-      </div>
+
 
   </div>
 
+  <div class="times">
 
-  <div id="currentRunningTime">
-    <h3>Current Running Time:</h3>
-    <p id="displayRunningTime"></p>
+    <div id="currentSchedulerSettings">
+      <h3>Current Scheduler Settings:</h3>
+      <p id="displaySchedulerSettings"></p>
+    </div>
+
+    <div id="currentRunningTime">
+      <h3>Current Running Time:</h3>
+      <p id="displayRunningTime"></p>
+    </div>
+
   </div>
 
 
