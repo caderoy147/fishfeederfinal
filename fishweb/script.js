@@ -146,13 +146,18 @@ function saveSchedulerSettings() {
   let selectedHour = parseInt(document.getElementById("hour-dd").value, 10); // Convert to integer
   const selectedAmPm = document.getElementById("ampm-dd").value;
 
+  const hour = selectedHour;
 
   // Adjust selectedHour based on AM or PM
-  if (selectedAmPm === "pm" || selectedAmPm === "PM") {
+  if ((selectedAmPm === "pm" || selectedAmPm === "PM" )&& hour !== 12) {
     selectedHour += 12;
-  } else if (selectedAmPm === "am" || selectedAmPm === "AM") {
+  } else if ((selectedAmPm === "am" || selectedAmPm === "AM")&& hour === 12) {
     // Here, if it's AM, you should not modify selectedHour
+    selectedHour = 0;
   }
+
+
+
   console.log("After adjustment - selectedHour:", selectedHour);
 
   const selectedMinute = parseInt(document.getElementById("minute-dd").value, 10); // Convert to integer
