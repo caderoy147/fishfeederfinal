@@ -13,10 +13,12 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 $(document).ready(function () {
   var database = firebase.database();
   var Led1Status;
+  var PrimerButton;
   var ManualStatus;
 
   // Real-time listener for scheduler settings
@@ -34,6 +36,12 @@ $(document).ready(function () {
     ManualStatus = snapshot.val();
     updateLedStatusUI();
   });
+
+  database.ref("PrimerButton").on("value", function (snapshot) {
+    PrimerButton = snapshot.val();
+    updateLedStatusUI();
+  });
+
 
 
 // ...
@@ -213,6 +221,12 @@ dayButtons.forEach(button => {
     manualDispense();
   });
 
+
+    // Event listener for the "MANUAL DISPENSE" button
+    $("#PrimerButton").click(function () {
+      Primer();
+    });
+
   // Event listener for the "MANUAL DISPENSE" button
   $("#saveButton").click(function () {
    // manualDispense();
@@ -231,6 +245,21 @@ dayButtons.forEach(button => {
       firebaseRef.set("1");
     }
   }
+
+  // Function to toggle PrimerButton in Firebase
+  function Primer() {
+    var firebaseRef = firebase.database().ref().child("PrimerButton");
+
+    if (PrimerButton === "1") {
+      firebaseRef.set("0");
+    } else {
+      firebaseRef.set("1");
+    }
+  }
+
+
+
+
 
   // Function to update UI based on Led1Status
   function updateLedStatusUI() {
@@ -328,3 +357,64 @@ function showView(viewId) {
 }
 
 
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  const pressButton = document.getElementById('pressButton');
+
+  pressButton.addEventListener('click', function () {
+    const timestamp = new Date();
+    const pressData = {
+      timestamp: timestamp,
+      buttonLabel: 'Press Me!',
+    };
+
+    // Add the data to Firestore collection named 'buttonPresses'
+    db.collection('buttonPresses').add(pressData)
+      .then((docRef) => {
+        console.log('Button press recorded with ID:', docRef.id);
+        // Fetch and display the data in the Feeding History Table
+        fetchAndDisplayFeedingHistory();
+      })
+      .catch((error) => {
+        console.error('Error adding button press:', error);
+      });
+  });
+
+  // Fetch and display the data in the Feeding History Table on page load
+  fetchAndDisplayFeedingHistory();
+});
+
+function fetchAndDisplayFeedingHistory() {
+  const feedingHistoryTableBody = document.querySelector('#dashboardView tbody');
+
+  // Clear existing table rows
+  feedingHistoryTableBody.innerHTML = '';
+
+  // Fetch data from Firestore collection 'buttonPresses'
+  db.collection('buttonPresses')
+  .orderBy('timestamp', 'desc') 
+ 
+  .get()
+  .then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+
+      const amountToFeed = data.amountToFeed;
+       
+      const formattedTimestamp = new Date(data.timestamp.toDate()).toLocaleString();
+        
+      const tableRow = `<tr>
+        <td>${formattedTimestamp}</td>
+        <td>${amountToFeed}</td>
+      </tr>`;
+      feedingHistoryTableBody.innerHTML += tableRow;
+    });
+
+    feedingHistoryTableContainer.style.height = feedingHistoryTableBody.scrollHeight + 'px';
+
+  })
+  .catch((error) => {
+    console.error('Error fetching feeding history:', error);
+  });
+}

@@ -112,7 +112,6 @@ header object {
 }
 
 .wrapper {
-  height: 100vh;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -161,9 +160,22 @@ header object {
   margin: 10px auto;
 }
 
-#testButton {
+#PrimerButton {
   margin-top: 20px;
-  background-color: #456799;
+  background-color: #994576;
+  margin-left: 20px;
+  width: 100px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+
+#saveButton {
+  margin-top: 10px;
+  background-color: #995b45;
+  width: 100px;
+  height: 40px;
+  border-radius: 10px;
 }
 
 .sh_container_days button.active {
@@ -198,7 +210,6 @@ header object {
 
 #dashboardContent2 {
   border: 2px solid #456799; /* Add a border to create a box effect */
-  padding: 20px; /* Add some padding inside the box */
   margin-top: 20px; /* Add margin for spacing */
   width: 80%; /* Set a width for the box, adjust as needed */
   max-width: 600px; /* Set a maximum width for responsiveness */
@@ -212,6 +223,7 @@ header object {
   width: 100px; /* Set the desired width */
   height: 40px; /* Set the desired height */
   border-radius: 10px;
+  margin-left: 20px;
 }
 
 #manualDispenseBtn{
@@ -286,4 +298,63 @@ header object {
     max-width: 100%; /* Ensure text does not overflow the container */
     overflow-wrap: break-word; /* Allow long words to break and wrap */
   }
+}
+
+#dashboardContent2 {
+  border: 2px solid #456799;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 600px;
+  box-sizing: border-box;
+  overflow-y: auto; /* Add this line to enable vertical scrollbar */
+  max-height: 300px; /* Set the maximum height for the container */
+}
+
+.savePrime{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#schedulerView{
+  padding-top: 20px;
+}
+
+
+#dashboardView table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+
+
+#dashboardView thead {
+  background-color: #456799;
+  color: white;
+}
+
+#dashboardView tbody {
+  max-height: 200px; /* Set the desired maximum height */
+  overflow-y: auto; /* Enable vertical scrolling if content exceeds the height */
+  display: block;
+}
+
+#dashboardView tr {
+  display: table;
+  width: 100%;
+  box-sizing: border-box;
+ 
+}
+
+#dashboardView tbody tr {
+
+  border: 1px solid  #456799; /* Replace #yourBorderColor with the color you want */
+}
+
+
+
+#dashboardView th,
+#dashboardView td {
+  width: 50%; /* Adjust the width as needed */
+  display: table-cell;
 }

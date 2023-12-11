@@ -8,6 +8,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-database.js"></script>
   <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-firestore.js"></script>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.4/css/all.css">
 
   <script src = "./script.js"></script>
@@ -24,7 +25,6 @@
   <div>
     <div class="navButtons">
       <button onclick="showView('dashboardView')">Dashboard</button>
-      <button onclick="showView('connectionView')">Wifi Settings</button>
       <button onclick="showView('schedulerView')">Set Schedule</button>
       <button onclick="showView('manualView')">User Manual</button>
     </div>
@@ -43,59 +43,18 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>2023-01-01 08:00 AM</td>
-              <td>50 grams</td>
-            </tr>
-            <tr>
-              <td>2023-01-02 12:30 PM</td>
-              <td>30 grams</td>
-            </tr>
             <!-- Add more dummy data rows as needed -->
           </tbody>
         </table>
         </div>
+
+        <div id="pressButton">
+
+
+        </div>
       </div>
     </div>
 
-
-    <div id="connectionView" class="hidden">
-        <!-- ... Connection form content ... -->
-        
-          <form id="connectionForm">
-            <h2>Connect to your home network</h2>
-
-            <div class="container-form">
-
-              <div class="entries">
-                <div class="ssid">
-                  <label for="fname">SSID:</label><br>
-                  <input type="text" id="fname" name="fname"><br>
-                </div>
-
-                <div class="password">
-                  <label for="lname">Password:</label><br>
-                  <input type="text" id="lname" name="lname"><br><br>
-                </div>
-
-              </div>
-
-              <div class="submit">
-                <input type="submit" value="Submit">
-              </div>
-            </div>
-          </form>
-
-      <div class="ipReturned">
-        <!-- ... IP returned content ... -->
-        
-          <div class="ipReturned">
-            <h4>Connect to the given IP address through your home network</h4>
-            <label for="lname">IP Address:</label>
-            <input type="text" id="ipDisplay" readonly>
-          </div>
-
-      </div>
     </div>
     <div id="schedulerView" class="hidden">
       <!-- ... Scheduler content ... -->
@@ -122,6 +81,10 @@
               <option value='pm'>PM</option>
             </select>
           </div>
+
+          
+
+
         </div>
     
   <div class="sh_container_days">
@@ -145,24 +108,45 @@
             <div>
               <input type="text" id="amountToFeed" placeholder="Enter amount to feed">
             </div>
-            <div className="calibrate">
-              <button id="testButton">Calibrate</button>
-            </div>
+
           </div>
         </div>
-    
+      <div class="savePrime">
         <div class="sh_container_save">
           <button id="saveButton">SAVE</button>
         </div>
+
+        <div class="calibrate">
+          <button id="PrimerButton">Prime</button>
+        </div>
+
+      </div>
       </div>
     
-    </div>
-    <div id="manualView" class="hidden">
-      <!-- ... User manual content ... -->
+
+      <div id="manualView" class="hidden">
+
+        <p>HI</p>
+  
+        <div class = "progress">
+          <div class = "toggle-btn" id ="unact">
+              <div class = "inner-circle"></div>
+          </div>
+      
+          <div class = "toggle-btn active" id ="act">
+              <div class = inner-circle></div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-        
-        <!-- Add this inside the #schedulerView -->
+
+   
+  
+
+</div>
+</div>
 
 
   </div>
@@ -174,10 +158,6 @@
       <p id="displaySchedulerSettings"></p>
     </div>
 
-    <div id="currentRunningTime">
-      <h3>Current Running Time:</h3>
-      <p id="displayRunningTime"></p>
-    </div>
 
   </div>
 
@@ -197,24 +177,8 @@ for (let i = 0; i <= 60; i++) {
 }
 </script>
 
+  
 
-
-      <div class = "wrapper">
-              <a class = "icon1" >
-          <i class="fas fa-4x fa-tv"></i>
-          </a>
-          <div class = "progress">
-            <div class = "toggle-btn" id ="unact">
-                <div class = "inner-circle"></div>
-            </div>
-
-            <div class = "toggle-btn active" id ="act">
-                <div class = inner-circle></div>
-            </div>
-        </div>
-        </div>
-      </div>
-        
 
 </body>
 
