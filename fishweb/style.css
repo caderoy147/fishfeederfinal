@@ -358,3 +358,14 @@ header object {
   width: 50%; /* Adjust the width as needed */
   display: table-cell;
 }
+
+.manualImages img {
+  padding: 20px;
+ display: flex;
+ flex-direction: row;
+  margin: 0 auto; /* Center the element horizontally */
+  display: block; /* Make sure it's a block-level element for the margin auto to work */
+  
+  width: 500px;
+  height: 500px;
+}
