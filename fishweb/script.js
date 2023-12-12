@@ -360,7 +360,7 @@ function showView(viewId) {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-  const pressButton = document.getElementById('pressButton');
+  const pressButton = document.getElementById('saveButton');
 
   pressButton.addEventListener('click', function () {
     const timestamp = new Date();
