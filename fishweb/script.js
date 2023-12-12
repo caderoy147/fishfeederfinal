@@ -403,7 +403,7 @@ function fetchAndDisplayFeedingHistory() {
     querySnapshot.forEach((doc) => {
       const data = doc.data();
 
-      const amountToFeed = data.amountToFeed;
+      const amountToFeed = data.amountfeeding;
        
       const formattedTimestamp = new Date(data.timestamp.toDate()).toLocaleString();
         
