@@ -364,10 +364,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const pressButton = document.getElementById('saveButton');
 
   pressButton.addEventListener('click', function () {
-    const amountfeeding
+    const amountfeeding = amountfeedweb;
     const timestamp = new Date();
     const pressData = {
-      amountfeeding:amountfeedweb,
+      amountfeeding:amountfeeding,
       timestamp: timestamp,
       buttonLabel: 'Press Me!',
     };
