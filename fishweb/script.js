@@ -10,7 +10,7 @@ const firebaseConfig = {
 };
 
 
-
+let amountfeedweb;
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
@@ -181,6 +181,7 @@ function saveSchedulerSettings() {
   });
 
   const amountToFeed = document.getElementById("amountToFeed").value;
+  amountfeedweb = amountToFeed
 
   const schedulerSettings = {
     hour: selectedHour,
@@ -363,8 +364,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const pressButton = document.getElementById('saveButton');
 
   pressButton.addEventListener('click', function () {
+    const amountfeeding
     const timestamp = new Date();
     const pressData = {
+      amountfeeding:amountfeedweb,
       timestamp: timestamp,
       buttonLabel: 'Press Me!',
     };
